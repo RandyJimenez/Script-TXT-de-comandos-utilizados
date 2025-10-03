@@ -1,0 +1,43 @@
+'''Crear usuario:'''
+
+sudo adduser nombre_usuario
+
+
+'''Agregar al grupo sudo:'''
+
+sudo usermod -aG sudo nombre_usuario
+
+
+'''Crear grupo guest:'''
+
+sudo groupadd guest
+
+
+'''Crear usuario y agregar al grupo guest:'''
+
+sudo adduser nombre_usuario_guest
+
+sudo usermod -aG guest nombre_usuario_guest
+
+
+'''Eliminar usuario''':
+
+sudo deluser --remove-home nombre_usuario
+
+
+'''Eliminar grupo''':
+
+sudo groupdel guest
+
+
+
+
+
+
+
+
+
+
+
+
+

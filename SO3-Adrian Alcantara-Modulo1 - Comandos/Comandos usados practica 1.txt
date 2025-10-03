@@ -1,0 +1,13 @@
+== Actualizacion del sistema: ==
+
+== Sudo apt update && apt upgrade ==
+
+
+
+
+
+
+
+
+
+

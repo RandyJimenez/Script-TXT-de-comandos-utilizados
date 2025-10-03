@@ -1,0 +1,19 @@
+sudo
+
+nmcli connection show
+
+sudo nmcli connection modify "Connection 1" ipv4.method auto
+
+sudo nmcli coonnection down “Connection 1”
+
+sudo nmcli coonnection up “Connection 1”
+
+sudo ifconfig ens33 192.168.33.20 netmask 255.255.255.0 up
+
+sudo route add default gw 192.168.33.2
+
+sudo nano /etc/resolv.conf
+
+sudo nano /etc/network/interfaces
+
+sudo service networking restart
