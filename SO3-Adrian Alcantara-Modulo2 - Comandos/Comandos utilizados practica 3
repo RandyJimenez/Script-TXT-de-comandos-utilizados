@@ -1,0 +1,43 @@
+1. Crear un disco de 20GB y atacharlo a la VM
+Ve a las configuraciones de tu VM en Linux Mint y crea un disco de 20GB.
+Adjunta este disco a tu máquina virtual (generalmente, en la configuración de "Almacenamiento").
+
+    2. Reiniciar el sistema y formatear el disco
+
+Comando para listar los discos:
+lsblk
+
+Formatea el disco con el sistema de archivos ext4 usando el siguiente comando:
+sudo mkfs.ext4 /dev/sdb
+
+    3. Crear una carpeta en el escritorio y montar el disco
+
+Crea una carpeta en el escritorio:
+mkdir ~/Escritorio/mi_disco
+
+Monta el disco en esa carpeta:
+sudo mount /dev/sdb ~/Escritorio/mi_disco
+
+    4. Crear un archivo dentro del directorio montado
+
+Accede al directorio montado:
+cd ~/Escritorio/mi_disco
+
+Crea un archivo de texto:
+echo "Contenido de prueba" > AdrianAlcantara.txt
+
+    5. Desmontar la unidad y montarla en /mnt
+
+Desmonta el disco:
+sudo umount ~/Escritorio/mi_disco
+
+Monta el disco en /mnt:
+sudo mount /dev/sdb /mnt
+
+    6. Verificar que el archivo sigue allí
+
+Navega al directorio /mnt:
+cd /mnt
+
+Verifica que el archivo AdrianAlcantara.txt esté allí:
+cat AdrianAlcantara.txt
