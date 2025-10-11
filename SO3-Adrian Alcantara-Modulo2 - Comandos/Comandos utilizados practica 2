@@ -1,0 +1,35 @@
+1. Actualizar el sistema todas las tardes a las 11 p.m.
+
+Edita el archivo cron con el siguiente comando:
+
+crontab -e
+
+Agrega la siguiente línea al final del archivo para programar la tarea a las 11 p.m. todos los días:
+
+0 23 * * * sudo apt update && sudo apt upgrade -y
+
+    2. Reiniciar el sistema todos los domingos a las 3 a.m.
+
+Abre el cron nuevamente:
+
+crontab -e
+
+Agrega la siguiente línea:
+
+0 3 * * 0 sudo reboot
+
+    3. Eliminar el contenido de la carpeta /tmp con el comando "at"
+
+Ver el contenido de la carpeta /tem antes de borrar
+
+ls /tmp
+
+Abre la terminal y escribe:
+
+at now + 1 minute
+
+Escribe el siguiente comando para eliminar el contenido de la carpeta /tmp:
+
+rm -rf /tmp/*
+
+CTRL+D para guardar
