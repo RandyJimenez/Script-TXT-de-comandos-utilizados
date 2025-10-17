@@ -1,0 +1,41 @@
+Configuración de GRUB y Recuperación de Contraseña de Root
+
+Abrir el archivo de configuración de GRUB:
+•	Abre una terminal.
+•	Usa un editor de texto como nano o vim para editar el archivo /etc/default/grub.
+- sudo nano /etc/default/grub
+
+Modificar la línea de tiempo de espera:
+•	Busca la línea que dice GRUB_TIMEOUT=5 (el valor por defecto puede ser 5 segundos).
+•	Cambia el número a 20.
+- GRUB_TIMEOUT=20
+
+Actualizar GRUB:
+•	Guarda los cambios y cierra el archivo.
+•	Actualiza la configuración de GRUB.
+- Sudo update-grub
+
+Reiniciar el sistema:
+•	Después de la actualización, reinicia el sistema para que los cambios tengan efecto.
+- Sudo reboot
+
+Recuperación de Contraseña de Root
+
+Reiniciar la máquina y acceder al GRUB:
+•	Durante el arranque, cuando aparezca el menú de GRUB, selecciona la opción de arranque que normalmente usas.
+•	Presiona e para editar las opciones de arranque.
+Modo de recuperación:
+•	Busca la línea que comienza con linux, y al final de esa línea, agrega single o init=/bin/bash.
+•	Esto hará que el sistema arranque en modo de usuario único (sin requerir contraseña).
+•	Presiona Ctrl + X para iniciar con esta opción.
+
+Luego en la terminal escribir:
+- Mount -o remount, rw /
+
+Cambiar la contraseña de root:
+•	Una vez que el sistema haya arrancado en modo recuperación, podrás acceder al terminal como root.
+•	Usa el siguiente comando para cambiar la contraseña:
+- passwd root
+
+Reinicia el sistema
+- reboot
