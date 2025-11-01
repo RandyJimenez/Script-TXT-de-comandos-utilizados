@@ -1,0 +1,59 @@
+1- Cluster HTTP con Keepalived
+
+Configurar páginas distintas
+
+	Server1
+	echo "<h1>Servidor 1</h1>" | sudo tee /var/www/html/index.html
+
+	Server2
+	echo "<h1>Servidor 2</h1>" | sudo tee /var/www/html/index.html
+
+Verifica acceso desde navegador:
+	http://192.168.100.140
+	http://192.168.100.149
+
+Configurar Keepalived
+	Archivo: /etc/keepalived/keepalived.conf
+	sudo nano /etc/keepalived/keepalived.conf
+
+server1 (MASTER):
+vrrp_instance VI_1 {
+    state MASTER
+    interface eth0
+    virtual_router_id 51
+    priority 100
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 1234
+    }
+    virtual_ipaddress {
+        192.168.1.250/24
+    }
+}
+
+server2 (BACKUP):
+vrrp_instance VI_1 {
+    state BACKUP
+    interface eth0
+    virtual_router_id 51
+    priority 90
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 1234
+    }
+    virtual_ipaddress {
+        192.168.1.250/24
+    }
+}
+
+Iniciar servicio (ambos servers)
+	sudo systemctl enable keepalived
+	sudo systemctl start keepalived
+
+Validar HA
+	http://192.168.100.250
+
+Apagar el servidor principal:
+	sudo systemctl stop keepalived
