@@ -26,54 +26,10 @@ Crear script de sincronización
 	Darle permisos
 	sudo chmod +x /usr/local/bin/sync_script.sh
 
-Agregar tarea al crontab
+2- Agregar tarea al crontab
       - crontab -e
 	* * * * * /usr/local/bin/sync_script.sh
 	Prueba de funcionamiento en server1, crear un nuevo archivo:
 	touch ~/sync_folder/nuevo.txt
 	Después de 1 minuto, en server2:
 	ls ~/sync_folder/
-
-2- Cluester de Alta Disponibilidad con Heartbeat
-
-Configurar Heartbeat
-
-Archivos de configuración:
-	/etc/ha.d/ha.cf
-	/etc/ha.d/haresources  
-	/etc/ha.d/authkeys
-
-Editar /etc/ha.d/ha.cf (Ambos servers)
-	sudo nano /etc/ha.d/ha.cf
-	logfacility     local0
-	keepalive       2
-	deadtime        10
-	warntime        5
-	initdead        20
-	udpport         694
-	bcast           eth0
-	auto_failback   on
-	node            server1
-	node            server2
-
-Editar /etc/ha.d/authkeys (Ambos servers)
-	sudo nano /etc/ha.d/authkeys
-	auth 1
-	1 crc
-
-Protege el archivo
-	sudo chmod 600 /etc/ha.d/authkeys
-
-Editar /etc/ha.d/haresources (Ambos Server)
-	sudo nano /etc/ha.d/haresources
-	server1 IPaddr::0.0.0.0/24/eth0
-
-Iniciar el servicio (Ambos servers)
-	sudo systemctl enable heartbeat
-	sudo systemctl start heartbeat
-
-Validar funcionamiento
-	ping 192.168.100.250
-
-Apaga uno de los servidores:
-	sudo poweroff
