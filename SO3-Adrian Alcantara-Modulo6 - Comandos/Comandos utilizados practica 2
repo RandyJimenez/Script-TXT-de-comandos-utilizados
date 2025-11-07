@@ -1,0 +1,28 @@
+IP Tables y UFW/Firewall-cmd
+
+Habilitar servicios HTTP, FTP y SSH
+- sudo apt install apache2 vsftpd openssh-server -y
+- sudo systemctl enable apache2 vsftpd ssh
+
+Bloquear puertos con IP Tables
+- sudo iptables -A INPUT -p tcp --dport 80 -j DROP
+- sudo iptables -A INPUT -p tcp --dport 21 -j DROP
+- sudo iptables -A INPUT -p tcp --dport 22 -j DROP
+
+Verifica con:
+- sudo iptables -L
+
+Habilitar nuevamente tráfico
+- sudo iptables -D INPUT -p tcp --dport 80 -j DROP
+- sudo iptables -D INPUT -p tcp --dport 21 -j DROP
+- sudo iptables -D INPUT -p tcp --dport 22 -j DROP
+
+Bloquear con UFW
+- sudo ufw deny 80
+- sudo ufw deny 21
+- sudo ufw deny 22
+
+Habilitar nuevamente:
+- sudo ufw allow 80
+- sudo ufw allow 21
+- sudo ufw allow 22
