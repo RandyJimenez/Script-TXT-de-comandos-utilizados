@@ -1,0 +1,36 @@
+Configuración de Red y SSH
+Configurar la VM en Modo Bridge
+Acceder a la configuración de red:
+•	En el software de virtualización (como VirtualBox o VMware), cambia la configuración de red de la VM a Bridge.
+•	Esto permitirá que la VM tenga su propia dirección IP en la misma red local que tu máquina host.
+Verificar conectividad con ping:
+•	Desde tu máquina host (Windows), abre una terminal de comando (cmd) y realiza un ping a la dirección IP de la VM.
+- ping 0.0.0.0
+
+Habilitar el Servicio SSH en la VM
+Instalar y habilitar SSH:
+•	En tu VM, asegúrate de tener el servicio SSH instalado.
+- sudo apt update
+- sudo apt install openssh-server
+
+Verificar si está funcionando:
+- sudo systemctl status ssh
+
+Conectar vía SSH desde el Host:
+•	En tu máquina host, abre una terminal y usa el comando ssh para conectarte a la VM.
+- sudo ssh root@0.0.0.0
+
+
+Generar y Copiar Claves SSH
+En tu Arch Linux (host), generar un par de claves:
+- sudo ssh-keygen -t rsa -b 4096
+
+Ubicación donde se guardará nuestra clave ssh:
+- cd /home/tu_usuario/.ssh/id_rsa
+
+
+Copiar la clave pública a la VM (servidor):
+- sudo ssh-copy-id -i id_rsa.pub root@192.168.1.1
+
+La clave publica se agregará en esta ubicación:
+- sudo nano /home/tu_usuario/.ssh/authorized_keys
