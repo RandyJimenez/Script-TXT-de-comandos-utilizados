@@ -1,0 +1,42 @@
+Crear Scripts de Backup y Registro de Red
+Script de Backup con TAR
+
+Crear el script:
+•	Abre un editor de texto para crear el script.
+- nano backup.sh
+
+Escribir el código:
+•	Dentro del script, agrega lo siguiente:
+
+#!/bin/bash
+# Definir la fecha y hora actual en el formato dd-mm-yyyy:hh:mm
+fecha=$(date +"%d-%m-%Y:%H:%M")
+# Crear un archivo comprimido usando TAR
+tar -czvf /home/(tu_usuario)/backup_$fecha.tar.gz /home/(tu_usuario)
+echo "Backup completado: /home/(tu_usuario)/backup_$fecha.tar.gz"
+
+Hacer el script ejecutable:
+- chmod +x backup.sh
+Ejecutar el Script
+- ./backup.sh
+
+Script para Copiar el Resultado de ifconfig
+Crear el script:
+•	Abre un nuevo archivo para el script.
+- nano ifconfig_backup.sh
+
+Escribir el código:
+•	El script debe pedir un nombre de archivo para guardar el resultado de ifconfig.
+
+#!/bin/bash
+# Solicitar el nombre del archivo
+read -p "¿Qué nombre deseas para el archivo? " nombre
+# Guardar el resultado de ifconfig en el archivo en el escritorio
+ifconfig > /home/(tu_usuario)/Escritorio/$nombre.txt
+echo "Archivo creado en el escritorio: /home/(tu_usuario)/Escritorio/$nombre.txt"
+
+Hacer el script ejecutable:
+- chmod +x ifconfig_backup.sh
+
+Ejecutar el script:
+- ./ifconfig_backup.sh
