@@ -1,0 +1,74 @@
+Práctica 2: File server compatible con Windows usando Samba
+
+1) Instalar y habilitar Samba
+
+- sudo apt update
+- sudo apt install -y samba
+- sudo systemctl enable --now smbd nmbd
+- sudo systemctl status smbd --no-pager
+
+2) Crear carpeta compartida, usuarios/grupos y permisos
+
+Carpeta compartida
+
+- sudo mkdir -p /srv/samba/so3share
+
+Grupo para gestionar accesos
+
+- sudo groupadd gruposo3
+
+Crear un usuario local y agregarlo al grupo
+
+- sudo useradd -m -s /bin/bash randy -G gruposo3
+- sudo passwd randy
+
+Dar permisos a la carpeta
+
+- sudo chown -R :gruposo3 /srv/samba/so3share
+- sudo chmod -R 2770 /srv/samba/so3share
+
+Agrega el usuario a Samba
+
+- sudo smbpasswd -a randy
+- sudo smbpasswd -e randy
+
+Configurar el share en smb.conf
+
+- sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.bak
+
+- sudo nano /etc/samba/smb.conf
+
+Añade al final:
+
+[SO3] 
+	path = /srv/samba/so3share 
+	browsable = yes 
+	read only = no 
+	valid users = @randy 
+	force group = gruposo3 
+	create mask = 0660 
+	directory mask = 2770 
+
+
+Valida y reinicia:
+
+- testparm
+- sudo systemctl restart smbd nmbd
+
+Crear 100 archivos adrian1 adrian100 dentro del share
+
+- for i in $(seq 1 100); do echo "archivo adrian${i}" | sudo -u randy tee /srv/samba/so3share/adrian${i} >/dev/null; done
+
+- ls -l /srv/samba/so3share | head
+
+5) Mapear en Windows como disco de red y editar adrian99
+    • Abre Explorador → clic derecho en “Este equipo” → Conectar a unidad de red… 
+    • Unidad: Z: (por ejemplo) 
+    • Carpeta: \\192.168.100.164\SO3 
+    • Marca “Conectar de nuevo al iniciar sesión”. 
+    • Cuando pida credenciales: 
+        ◦ Usuario: NOMBRE-SERVIDOR\randy (o randy si coincide) 
+        ◦ Password: el que diste en smbpasswd -a
+
+Firewall (UFW) en servidor:
+sudo ufw allow 137,138/udp && sudo ufw allow 139,445/tcp && sudo ufw reload
