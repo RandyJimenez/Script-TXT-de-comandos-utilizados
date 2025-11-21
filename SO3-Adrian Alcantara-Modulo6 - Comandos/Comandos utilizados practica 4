@@ -1,0 +1,24 @@
+Configurar 2FA con Google Authenticator
+
+Instalar Google Authenticator
+sudo apt install libpam-google-authenticator -y
+
+Configurar para el usuario
+google-authenticator
+
+Configurar PAM
+Edita /etc/pam.d/sshd y agrega:
+auth required pam_google_authenticator.so
+
+Configurar SSH
+Edita /etc/ssh/sshd_config:
+
+PermitRootLogin yes
+ChallengeResponseAuthentication yes 
+AuthenticationMethods password,keyboard-interactive (solo si tienes una key ssh generada)
+
+Reinicia SSH:
+sudo systemctl restart ssh
+
+Prueba acceso
+ssh randy-20242391@192.168.100.140
