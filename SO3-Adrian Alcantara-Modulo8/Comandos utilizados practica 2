@@ -1,0 +1,18 @@
+Practica 2: Instalacion de Portainer
+
+1. Descargar imagen de Portainer desde Docker Hub
+
+sudo docker pull portainer/portainer-ce:latest
+
+2. Crear contenedor y mapear puertos
+
+- sudo docker volume create portainer_data
+- sudo docker run -d --name portainer -p 9443:9443 -p 9000:9000 --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data \portainer/portainer-ce:latest
+
+3. Acceder a la interfaz de administración
+
+https://127.0.0.1:9443
+
+Detener el contenedor NGINX desde Portainer
+
+Comprobar en el navegador
