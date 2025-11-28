@@ -1,0 +1,59 @@
+Practica 1: Instalacion y configuracion de Docker
+
+1. Instalar Docker Engine
+
+- sudo apt update
+- sudo apt install ca-certificates curl gnupg
+
+Luego agrega el repositorio oficial de Docker y lo instalas:
+
+- sudo install -m 0755 -d /etc/apt/keyrings
+- curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+echo \
+"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+bookworm stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+- sudo apt update
+- sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+Verifica que Docker esté instalado:
+
+- sudo docker version
+
+2. Descargar la imagen de NGINX desde Docker Hub
+
+- sudo docker pull nginx
+
+3. Crear y ejecutar un contenedor con redirección de puertos y volumen
+
+sudo docker run -d --name mi_nginx -p 8888:80 -v /home/website:/usr/share/nginx/html \nginx
+
+4. Crear tu página index.html
+
+En el host, crea el directorio si no existe:
+
+- mkdir -p /home/website
+
+Luego crea el archivo con tu nombre y matrícula:
+
+- sudo nano /home/website/index.html
+
+Colocar dentro:
+
+<!DOCTYPE html>
+<html>
+  <head><title>Randy Jose Jimenez Espinal</title></head>
+  <body>
+    <h1>Randy Jose Jimenez Espinal</h1>
+    <p>Matrícula: 2024-2391</p>
+  </body>
+</html>
+
+5. Verificar la página en el navegador
+
+Abre tu navegador e ingresa la siguiente dirección:
+
+- http://127.0.0.1:8888
+- sudo docker restart mi_nginx
