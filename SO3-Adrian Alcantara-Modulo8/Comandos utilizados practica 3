@@ -1,0 +1,63 @@
+Practica 3: Despliegue de contenedor de Wordpress utilizando Docker-Compose 
+
+1. Instalar Docker Compose
+
+- sudo apt update
+- sudo apt install docker-compose
+
+Verifica la versión:
+
+- docker-compose --version
+
+2. Crear archivo docker-compose.yml
+
+Crea el archivo en tu directorio de trabajo:
+
+- nano docker-compose.yml
+
+Contenido:
+
+version: '3.8'
+
+services:
+  db:
+    image: mariadb:latest
+    container_name: wordpress_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wpuser
+      MYSQL_PASSWORD: wppass
+    volumes:
+      - db_data:/var/lib/mysql
+
+  wordpress:
+    image: wordpress:latest
+    container_name: wordpress_app
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_PASSWORD: wppass
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wp_data:/var/www/html
+
+volumes:
+  db_data:
+  wp_data:
+
+3. Desplegar los contenedores
+
+- sudo docker-compose up -d
+
+Verifica:
+
+- sudo docker ps
+
+4. Configurar WordPress
+
+http://127.0.0.1:8080
