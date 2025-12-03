@@ -1,0 +1,59 @@
+Practica 2 Desplieque de una VM con terraform en digital Ocean
+
+1. Instalacion:
+
+- wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+- echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+- sudo apt update && sudo apt install terraform
+
+- ssh-keygen -lf /path/to/your/public/key
+
+2. Configurar archivo para desplegar:
+
+- mkdir -p ~/terraform-project
+
+main.tf
+
+terraform {
+  required_providers {
+    digitalocean = {
+      source  = "digitalocean/digitalocean"
+      version = "~> 2.0"
+    }
+  }
+}
+
+variable "do_token" {}
+variable "ssh_key_fingerprint" {}
+
+provider "digitalocean" {
+  token = var.do_token
+}
+
+resource "digitalocean_droplet" "web" {
+  name   = "OS3vm"
+  image  = "ubuntu-22-04-x64"
+  size   = "s-1vcpu-1gb"
+  region = "nyc1"
+  ssh_keys = [var.ssh_key_fingerprint]
+  backups = false
+  monitoring = true
+  ipv6 = true
+}
+
+terraform.tfvars
+
+do_token = "tu_token_de_digital_ocean"
+ssh_key_fingerprint = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+
+3. Iniciar y ejecutar terraform
+
+terraform init		# Inicializa Terraform y descarga los proveedores
+terraform plan		# Muestra el plan de ejecución para revisar qué se va a crear
+terraform apply	# Aplica los cambios y crea la infraestructura
+
+Validar ingresando por SSH y tambien por el portal web
+
+ssh vm@0.0.0.0
