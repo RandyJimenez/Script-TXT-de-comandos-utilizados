@@ -1,0 +1,58 @@
+1 - Instalar CUPS y la impresora PDF virtual
+- sudo apt install -y cups cups-client cups-pdf
+- sudo systemctl enable --now cups
+
+Agrega tu usuario al grupo de administración de impresoras:
+- sudo usermod -aG lpadmin $USER
+# Cierra sesión y vuelve a entrar, o ejecuta: newgrp lpadmin
+
+2 - Permitir administración/uso desde la red
+- sudo nano /etc/cups/cupsd.conf
+
+# Escuchar en todas las interfaces
+Port 631
+Listen 0.0.0.0:631
+
+# Permitir acceso a la interfaz web
+<Location />
+  Order allow,deny
+  Allow @LOCAL
+</Location>
+
+# Permitir administración desde la LAN
+<Location /admin>
+  Order allow,deny
+  Allow @LOCAL
+</Location>
+
+# Navegación
+WebInterface Yes
+
+Aplica cambios:
+- sudo systemctl restart cups
+
+Firewall:
+- sudo ufw allow 631/tcp
+
+3 - Añadir impresora virtual PDF (CUPS-PDF)
+- El paquete cups-pdf crea una impresora llamada “PDF” automáticamente. Verifícala:
+- Interfaz web: en el servidor, abre http://localhost:631 → Printers
+
+Por defecto, los PDFs se guardan en:
+/var/spool/cups-pdf/ANONYMOUS/   (si imprimiste sin sesión)
+~/PDF/                            (según configuración)
+
+4 - Instalar la impresora en el PC cliente usando la IP del servidor
+
+Windows:
+Windows - impresora y escaneres - Impresoras y escáneres 
+- clic en Agregar una impresora o escáner - La impresora que quiero no está en la lista - Agregar una impresora por dirección TCP/IP - Dispositivo TCP/IP - IP_DEL_SERVIDOR
+http://IP_DEL_SERVIDOR:631/printers/PDF
+
+Linux:
+- sudo apt install -y cups-client
+- lpadmin -p PDF-Remota -E -v ipp://IP_DEL_SERVIDOR/printers/PDF -m everywhere
+- lpoptions -d PDF-Remota
+
+Pruebas:
+- echo "Prueba de impresión CUPS PDF" | lp -d PDF-Remota
