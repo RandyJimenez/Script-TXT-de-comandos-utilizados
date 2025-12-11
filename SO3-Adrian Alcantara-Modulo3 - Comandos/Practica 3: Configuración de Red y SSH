@@ -1,4 +1,5 @@
 Configuración de Red y SSH
+
 Configurar la VM en Modo Bridge
 Acceder a la configuración de red:
 •	En el software de virtualización (como VirtualBox o VMware), cambia la configuración de red de la VM a Bridge.
