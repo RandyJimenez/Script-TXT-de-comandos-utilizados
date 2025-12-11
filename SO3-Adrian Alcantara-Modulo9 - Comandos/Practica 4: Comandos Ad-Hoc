@@ -1,0 +1,7 @@
+1 - Copiar un archivo TXT desde el escritorio de ansible2 a la carpeta Documentos en Windows usando win_copy
+
+ansible windows1 -m win_copy -a "src=C:\\\\Users\\\\ansible\\\\Desktop\\\\archivo.txt dest=C:\\\\Users\\\\ansible\\\\Documents\\\\archivo.txt remote_src=yes" -i /etc/ansible/hosts
+
+2 - Reiniciar la VM ansible1 (Linux) usando el módulo reboot
+
+- ansible linux1 -m reboot -i /etc/ansible/hosts --become
