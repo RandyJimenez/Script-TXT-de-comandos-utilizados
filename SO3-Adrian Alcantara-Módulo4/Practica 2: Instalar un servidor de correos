@@ -7,7 +7,7 @@ Durante el asistente de Postfix:
 
 2 - Configurar Relay con Gmail (TLS y autenticación)
 
-
+Edita /etc/postfix/main.cf y añade estas líneas:
 - sudo tee -a /etc/postfix/main.cf > /dev/null <<'EOF'
 # === Envío por relay Gmail ===
 relayhost = [smtp.gmail.com]:587
@@ -26,4 +26,30 @@ smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
 myorigin = /etc/mailname
 inet_interfaces = all
 inet_protocols = ipv4
+EOF
+
+Crea el archivo de credenciales con tu correo y contraseña de aplicación
+
+- sudo tee /etc/postfix/sasl_passwd > /dev/null <<'EOF'
+[smtp.gmail.com]:587  TU_CORREO_GMAIL@gmail.com:TU_CONTRASEÑA_DE_APLICACIÓN
+EOF
+- sudo chmod 600 /etc/postfix/sasl_passwd
+- sudo postmap /etc/postfix/sasl_passwd
+
+Cómo obtener “contraseña de aplicación” en Gmail
+Cuenta Google → Seguridad → Verificación en dos pasos → Contraseñas de aplicaciones → Crear para “Correo” en “Otro (por ejemplo, Postfix)”.
+Te dará un código de 16 caracteres, sin espacios.
+
+3 - Enviar el correo
+
+- echo -e "Randy Jose Jimenez Espinal\nMatrícula: 20250001" | mail -s "MambruSeFueALaGuerra" os3conadrian@gmail.com
+
+Verifica la cola:
+- mailq
+
+Revisa logs por si hay errores:
+- sudo tail -f /var/log/mail.log
+
+
+
 
