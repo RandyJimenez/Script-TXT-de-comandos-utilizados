@@ -1,0 +1,29 @@
+1 - Instalar Postfix y utilidades de correo
+- sudo apt install postfix mailutils
+
+Durante el asistente de Postfix:
+- Tipo: Internet Site
+- System mail name: pon tu hostname.
+
+2 - Configurar Relay con Gmail (TLS y autenticación)
+
+
+- sudo tee -a /etc/postfix/main.cf > /dev/null <<'EOF'
+# === Envío por relay Gmail ===
+relayhost = [smtp.gmail.com]:587
+
+# SASL (autenticación SMTP)
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_sasl_security_options = noanonymous
+
+# TLS
+smtp_use_tls = yes
+smtp_tls_security_level = may
+smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
+
+# Desde/hasta
+myorigin = /etc/mailname
+inet_interfaces = all
+inet_protocols = ipv4
+
