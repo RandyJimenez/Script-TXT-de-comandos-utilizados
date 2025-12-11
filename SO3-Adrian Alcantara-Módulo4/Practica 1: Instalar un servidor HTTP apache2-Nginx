@@ -1,0 +1,132 @@
+1 - Instalar Apache
+- sudo apt install -y apache2
+- sudo systemctl enable --now apache2
+
+Prueba local:
+- curl -I http://localhost
+
+2) Website estático en puerto 80
+
+- sudo mkdir -p /var/www/hola
+- sudo tee /var/www/hola/index.html > /dev/null <<'EOF'
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Hola</title></head>
+<body><h1>Hola Mundo</h1></body></html>
+EOF
+- sudo chown -R www-data:www-data /var/www/hola
+
+Configura host virtual:
+- sudo tee /etc/apache2/sites-available/hola.conf > /dev/null <<'EOF'
+<VirtualHost *:80>
+    ServerName hola.local
+    DocumentRoot /var/www/hola
+    <Directory /var/www/hola>
+        Options -Indexes +FollowSymLinks
+        AllowOverride None
+        Require all granted
+    </Directory>
+    ErrorLog ${APACHE_LOG_DIR}/hola_error.log
+    CustomLog ${APACHE_LOG_DIR}/hola_access.log combined
+</VirtualHost>
+
+Activar el sitio y módulos necesarios:
+- sudo a2ensite hola.conf
+- sudo a2enmod rewrite
+- sudo systemctl reload apache2
+
+Acceder desde otra via:
+# En el cliente (Windows: C:\Windows\System32\drivers\etc\hosts
+# Linux: /etc/hosts)
+
+- 0.0.0.0  hola.local
+
+Pruebas:
+- curl http://localhost
+- curl http://hola.local
+
+3) Website con tu nombre, matrícula y materia en puerto 8080
+
+Creamos /var/www/datos y virtual host que escuche en 8080:
+- sudo mkdir -p /var/www/datos
+- sudo tee /var/www/datos/index.html > /dev/null <<'EOF'
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Datos</title></head>
+<body>
+<h1>Randy Jose Jimenez Espinal</h1>
+<p>Matrícula: (coloca tu matrícula aquí)</p>
+<p>Materia: (coloca el nombre de la materia aquí)</p>
+</body></html>
+EOF
+- sudo chown -R www-data:www-data /var/www/datos
+
+Crea el virtual host en 8080:
+- sudo tee /etc/apache2/sites-available/datos8080.conf > /dev/null <<'EOF'
+<VirtualHost *:8080>
+    ServerName datos.local
+    DocumentRoot /var/www/datos
+    <Directory /var/www/datos>
+        Options -Indexes +FollowSymLinks
+        AllowOverride None
+        Require all granted
+    </Directory>
+    ErrorLog ${APACHE_LOG_DIR}/datos_error.log
+    CustomLog ${APACHE_LOG_DIR}/datos_access.log combined
+</VirtualHost>
+EOF
+
+Activar el sitio web:
+- sudo a2ensite datos8080.conf
+
+Pruebas:
+- curl http://localhost:8080
+
+Opción B: Nginx
+- sudo apt install -y nginx
+
+Sitio “Hola Mundo” (80):
+
+sudo mkdir -p /var/www/hola
+sudo tee /var/www/hola/index.html > /dev/null <<'EOF'
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Hola</title></head>
+<body><h1>Hola Mundo</h1></body></html>
+EOF
+- sudo tee /etc/nginx/sites-available/hola > /dev/null <<'EOF'
+server {
+    listen 80;
+    server_name hola.local;
+    root /var/www/hola;
+    index index.html;
+    access_log /var/log/nginx/hola_access.log;
+    error_log  /var/log/nginx/hola_error.log;
+    location / { try_files $uri $uri/ =404; }
+}
+EOF
+- sudo ln -s /etc/nginx/sites-available/hola /etc/nginx/sites-enabled/hola
+- sudo nginx -t && sudo systemctl reload nginx
+
+Sitio datos (8080):
+- sudo mkdir -p /var/www/datos
+- sudo tee /var/www/datos/index.html > /dev/null <<'EOF'
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Datos</title></head>
+<body>
+<h1>Randy Jose Jimenez Espinal</h1>
+<p>Matrícula: (coloca tu matrícula)</p>
+<p>Materia: (coloca la materia)</p>
+</body></html>
+EOF
+- sudo tee /etc/nginx/sites-available/datos8080 > /dev/null <<'EOF'
+server {
+    listen 8080;
+    server_name datos.local;
+    root /var/www/datos;
+    index index.html;
+    access_log /var/log/nginx/datos_access.log;
+    error_log  /var/log/nginx/datos_error.log;
+    location / { try_files $uri $uri/ =404; }
+}
+EOF
+- sudo ln -s /etc/nginx/sites-available/datos8080 /etc/nginx/sites-enabled/datos8080
+
+
