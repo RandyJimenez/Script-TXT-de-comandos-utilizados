@@ -1,0 +1,65 @@
+1 - Instalar Ansible en la VM-Server (Controlador)
+- sudo apt update
+- sudo apt install ansible -y
+
+2 - Configurar los equipos clientes
+
+Linux (DigitalOcean VM):
+
+1. Instala Python (Ansible lo necesita)
+- sudo apt update
+- sudo apt install python3 -y
+
+2. Crea el usuario ansible:
+- sudo adduser ansible
+- sudo usermod -aG sudo ansible
+
+3. Habilita SSH
+- sudo systemctl enable ssh
+- sudo systemctl start ssh
+
+Windows VM:
+
+1. Instala WinRM (Ansible usa WinRM para Windows). Ejecuta en PowerShell como administrador
+
+- winrm quickconfig
+- winrm set winrm/config/service/Auth @{Basic="true"}
+- winrm set winrm/config/service @{AllowUnencrypted="true"}
+
+2. Crea el usuario ansible con permisos de administrador
+- net user ansible <password> /add
+- net localgroup Administradores ansible /add
+
+3 - Configurar autenticación SSH sin contraseña
+
+En el controlador:
+- ssh-keygen -t rsa -b 4096
+- ssh-copy-id ansible@<IP_VM_LINUX>
+
+4 - Crear inventario de Ansible
+
+- sudo mkdir -p /etc/ansible
+- sudo touch /etc/ansible/ansible.cfg
+
+[defaults]
+inventory = /etc/ansible/hosts
+host_key_checking = False
+
+
+- sudo nano /etc/ansible/hosts
+
+[linux]
+linux1 ansible_host=<IP_VM_LINUX> ansible_user=ansible
+
+[windows]
+windows1 ansible_host=192.168.1.20 ansible_user=ansible ansible_password=TuPassword ansible_connection=winrm ansible_winrm_transport=basic ansible_port=5985 ansible_winrm_scheme=http ansible_shell_type=powershell windows1 ansible_python_interpreter=auto_silent
+
+
+
+5 - Probar conexión
+
+Para Linux:
+- ansible linux -m win_ping -i /etc/ansible/hosts
+
+Para Windows:
+- ansible windows -m win_ping -i /etc/ansible/hosts
