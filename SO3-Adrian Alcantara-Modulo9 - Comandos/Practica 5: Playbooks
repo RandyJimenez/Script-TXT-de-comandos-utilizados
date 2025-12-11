@@ -1,0 +1,87 @@
+1 - Playbook: Instalar Notepad++ en Windows (ansible2)
+
+
+- mkdir -p playbooks
+
+- sudo nano install_notepadpp.yml
+
+---
+- name: Instalar Notepad++ en Windows (ansible2)
+  hosts: win
+  gather_facts: no
+  vars:
+    npp_url: "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.6.2/npp.8.6.2.Installer.x64.exe"
+    npp_installer_path: "C:\\Temp\\npp-installer.exe"
+    npp_install_silent_args: "/S"
+    npp_exe_path: "C:\\Program Files\\Notepad++\\notepad++.exe"
+
+  tasks:
+    - name: Crear carpeta temporal si no existe
+      ansible.windows.win_file:
+        path: "C:\\Temp"
+        state: directory
+
+    - name: Descargar instalador de Notepad++
+      ansible.windows.win_get_url:
+        url: "{{ npp_url }}"
+        dest: "{{ npp_installer_path }}"
+        force: yes
+
+    - name: Instalar Notepad++ (silencioso)
+      ansible.windows.win_package:
+        path: "{{ npp_installer_path }}"
+        arguments: "{{ npp_install_silent_args }}"
+        state: present
+
+    - name: Verificar instalación
+      ansible.windows.win_stat:
+        path: "{{ npp_exe_path }}"
+      register: npp_stat
+
+    - name: Mostrar resultado
+      ansible.builtin.debug:
+        msg: >-
+          Notepad++ {{ 'instalado' if npp_stat.stat.exists else 'NO instalado' }}.
+
+- ansible-playbook install_notepadpp.yml -i /etc/ansible/hosts
+
+2 - Playbook: Instalar NGINX e iniciar el servicio en Linux (ansible1)
+
+- sudo nano install_nginx.yml
+
+
+---
+- name: Instalar NGINX y habilitar el servicio en Linux (ansible1)
+  hosts: linux
+  become: yes
+  vars:
+    nginx_pkg: nginx
+    nginx_service: nginx
+
+  tasks:
+    - name: Actualizar índice de paquetes (APT)
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Instalar NGINX
+      ansible.builtin.apt:
+        name: "{{ nginx_pkg }}"
+        state: present
+
+    - name: Asegurar que NGINX está iniciado y habilitado
+      ansible.builtin.service:
+        name: "{{ nginx_service }}"
+        state: started
+        enabled: yes
+
+    - name: Mostrar estado del servicio
+      ansible.builtin.shell: "systemctl status {{ nginx_service }} --no-pager"
+      register: nginx_status
+      changed_when: false
+
+    - name: Imprimir estado
+      ansible.builtin.debug:
+        var: nginx_status.stdout
+
+ansible-playbook install_nginx.yml -i /etc/ansible/hosts
