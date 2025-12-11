@@ -17,31 +17,58 @@ Practica 2 Desplieque de una VM con terraform en digital Ocean
 main.tf
 
 terraform {
+  required_version = ">= 1.5.0"
   required_providers {
     digitalocean = {
       source  = "digitalocean/digitalocean"
-      version = "~> 2.0"
+      version = "~> 2.38"   # versión estable reciente
     }
   }
 }
 
-variable "do_token" {}
-variable "ssh_key_fingerprint" {}
+# Variables con tipos y sensibilidad
+variable "do_token" {
+  type        = string
+  description = "Token de API de DigitalOcean"
+  sensitive   = true
+}
+
+variable "ssh_key_fingerprint" {
+  type        = string
+  description = "Fingerprint de la clave SSH registrada en DigitalOcean"
+}
 
 provider "digitalocean" {
   token = var.do_token
 }
 
 resource "digitalocean_droplet" "web" {
-  name   = "OS3vm"
-  image  = "ubuntu-22-04-x64"
-  size   = "s-1vcpu-1gb"
-  region = "nyc1"
+  name       = "OS3vm"
+  image      = "ubuntu-22-04-x64"
+  size       = "s-1vcpu-1gb"
+  region     = "nyc1"                # Puedes cambiar a nyc3/sfo3/ams3 según prefieras
+  backups    = false
+  monitoring = true                  # Activa monitorización (requiere agente para métricas avanzadas)
+  ipv6       = true                  # Habilita IPv6 si la región lo soporta
+
+  # DIGITALOCEAN acepta IDs o fingerprints; aquí usamos fingerprint
   ssh_keys = [var.ssh_key_fingerprint]
-  backups = false
-  monitoring = true
-  ipv6 = true
+
+  # Opcional: etiquetas
+  tags = ["terraform", "web"]
 }
+
+# Output útil
+output "droplet_ipv4" {
+  description = "IP pública IPv4 del Droplet"
+  value       = digitalocean_droplet.web.ipv4_address
+}
+
+output "droplet_ipv6" {
+  description = "IP pública IPv6 del Droplet (si está habilitada)"
+  value       = digitalocean_droplet.web.ipv6_address
+}
+
 
 terraform.tfvars
 
